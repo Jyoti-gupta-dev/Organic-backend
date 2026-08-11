@@ -106,14 +106,14 @@ app.use("/api/Products", require("./routes/productRoutes"));
 
 
 // Default route
-app.get("/", (req,res)=>{
+app.get("/", (req, res) => {
     res.json({
-        message:"Server Created Successfully"
+        message: "Server Created Successfully"
     });
 });
 
 
 // Server
-app.listen(5000,()=>{
+app.listen(5000, () => {
     console.log("Server Running on Port 5000");
 });
