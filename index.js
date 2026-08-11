@@ -88,7 +88,10 @@ async function main() {
 
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ["https://organic-frontend-sigma.vercel.app", "https://localhost:5173"]
+}
+));
 app.use(express.json());
 
 
