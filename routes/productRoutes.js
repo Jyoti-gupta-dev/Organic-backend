@@ -16,8 +16,8 @@ router.post(
 
 
 
-router.get("/getAllProducts",upload.single("image"), getAllProducts)
-router.post("/createProducts",createProduct)
+router.get("/getAllProducts", getAllProducts)
+// router.post("/createProducts",createProduct)
 // GET SINLGE PRODUCT
 
 // router.delete("/deleteProduct/:id", deleteProduct)
