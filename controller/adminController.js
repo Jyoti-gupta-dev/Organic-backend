@@ -3,7 +3,6 @@ const Admin = require("../model/adminModel")
 const adminLogin = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
     const admin = await Admin.findOne({ email });
 
     if (!admin) {
@@ -44,8 +43,6 @@ const adminLogin = async (req, res) => {
 const registerAdmin = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    console.log(req.body)
-    console.log(req.file)
     const image = req.file.filename || "";
     if (!name || !email || !password) {
       return res.status(400).json({
