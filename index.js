@@ -29,9 +29,10 @@ async function main() {
 //  }
 // ));
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5174",
-
-        "https://organic-frontend-sigma.vercel.app","https://organic-admin-pink.vercel.app"
+    origin: ["http://localhost:5173",
+        "http://localhost:5174",
+        "https://organic-frontend-sigma.vercel.app",
+        "https://organic-admin-pink.vercel.app"
     ],
     credentials: true
 }));
