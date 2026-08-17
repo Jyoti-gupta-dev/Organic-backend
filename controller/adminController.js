@@ -2,6 +2,7 @@ const Admin = require("../model/adminModel")
 
 const adminLogin = async (req, res) => {
   try {
+    console.log(req.body)
     const { name, email, password } = req.body;
     const admin = await Admin.findOne({ email });
 
@@ -30,6 +31,7 @@ const adminLogin = async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       message: error,
