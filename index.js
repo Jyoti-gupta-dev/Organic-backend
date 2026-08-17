@@ -1,33 +1,28 @@
 
-
-
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
-require("dotenv").config();
-
 const app = express();
-
 
 // Connect MongoDB
 main().catch((err) => console.log(err));
 
 async function main() {
+    try {
+        await mongoose.connect(
+            "mongodb://jyotigupta:miracle@ac-vefzhvy-shard-00-00.ybpqktq.mongodb.net:27017,ac-vefzhvy-shard-00-01.ybpqktq.mongodb.net:27017,ac-vefzhvy-shard-00-02.ybpqktq.mongodb.net:27017/?ssl=true&replicaSet=atlas-4gafsj-shard-0&authSource=admin&appName=Cluster0"
+        );
 
-    await mongoose.connect(
-        "mongodb://jyotigupta:miracle@ac-vefzhvy-shard-00-00.ybpqktq.mongodb.net:27017,ac-vefzhvy-shard-00-01.ybpqktq.mongodb.net:27017,ac-vefzhvy-shard-00-02.ybpqktq.mongodb.net:27017/users"
-    );
-    console.log("Database Connected");
-    console.log("DB Name:", mongoose.connection.name);
+        console.log("Database Connected");
+        console.log("DB Name:", mongoose.connection.name);
+    } catch (err) {
+        console.log("MongoDB Connection Error:", err);
+    }
 }
 
 
-// Middleware
-//  app.use(cors({
-//     origin: ["*"]
-//  }
-// ));
+
 app.use(cors({
     origin: ["http://localhost:5173",
         "http://localhost:5174",
