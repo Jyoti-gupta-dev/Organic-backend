@@ -2,10 +2,8 @@ const Admin = require("../model/adminModel")
 
 const adminLogin = async (req, res) => {
   try {
-    console.log(req.body)
     const { name, email, password } = req.body;
-    const admin = await Admin.find({ email });
-
+    const admin = await Admin.findOne({ email });
     if (!admin) {
       return res.status(404).json({
         success: false,
