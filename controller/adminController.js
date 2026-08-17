@@ -4,7 +4,7 @@ const adminLogin = async (req, res) => {
   try {
     console.log(req.body)
     const { name, email, password } = req.body;
-    const admin = await Admin.findOne({ email });
+    const admin = await Admin.find({ email });
 
     if (!admin) {
       return res.status(404).json({
