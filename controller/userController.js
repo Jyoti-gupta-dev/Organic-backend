@@ -1,7 +1,8 @@
 const User = require("../model/userModel")
+const jwt = require("jsonwebtoken")
 
 
-//USERSIGNuP
+//USERSIGNUP
 
 const userSignup = async (req, res) => {
     console.log(req.body)
@@ -22,17 +23,28 @@ const userSignup = async (req, res) => {
             phone,
             password,
         })
+        const token = jwt.sign({
+            userId: user._id
+        },
+            process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: "7D"
+            }
+        )
         res.status(201).json({
             success: true,
             message: "Signup successfull",
+            token,
             user: {
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
-                password: user.password,
+
 
             },
         })
+
+
 
 
     } catch (error) {
@@ -65,9 +77,18 @@ const userLogin = async (req, res) => {
                 message: "incorrect password"
             })
         }
+        const token = jwt.sign({
+            userId: user._id
+        },
+            process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: "7D"
+            }
+        )
         res.status(200).json({
             success: true,
             message: "Login successfull",
+            token,
             user: {
                 email: user.email,
                 password: user.password,
@@ -133,7 +154,71 @@ const getAllUser = async (req, res) => {
 
     }
 };
+//UPDATE USER
 
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log("ID:", req.params.id);
+console.log("BODY:", req.body);
 
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            req.body,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
 
-module.exports = { userSignup, userLogin, getSingleUser, getAllUser }
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "User updated successfully",
+            data: updatedUser
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+//DELETE USER
+
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedUser = await User.findByIdAndDelete(id);
+
+        if (!deletedUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "User deleted successfully",
+            data: deletedUser
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+module.exports = { userSignup, userLogin, getSingleUser, getAllUser, updateUser, deleteUser }

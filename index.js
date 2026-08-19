@@ -3,7 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
+require("dotenv").config();
 const app = express();
+
 
 // Connect MongoDB
 main().catch((err) => console.log(err));
@@ -25,6 +27,10 @@ async function main() {
 
 app.use(cors({
     origin: ["http://localhost:5173",
+
+
+
+
         "http://localhost:5174",
 
         "https://organic-frontend-sigma.vercel.app",

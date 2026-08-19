@@ -1,107 +1,3 @@
-// const product = require("../model/productModel");
-
-// //CREATE PRODUCT
-
-// const createProduct = async (req, res) => {
-//     console.log(req.file);
-//     console.log(req.body)
-//     try {
-//         console.log(req.body)
-
-//         const { title, brand, category, type, description, price, discount, size, sku, image } = req.body
-
-//         // const newProduct = new product({
-//         //     title,
-//         //     brand,
-//         //     category,
-//         //     type,
-//         //     description,
-//         //     price,
-//         //     discount,
-//         //     size,
-//         //     sku,
-//         //     image: req.file ? req.file.filename : ""
-//         // });
-
-//         const newProduct = new product({
-//     title,
-//     brand,
-//     category,
-//     type,
-//     description,
-//     price,
-//     discount,
-//     size,
-//     sku,
-//     stock: req.body.stock || 0,
-//     image: req.file ? req.file.filename : "",
-// });
-
-//         const saveProduct = await newProduct.save()
-//         if (!saveProduct) {
-//             return res.json({ mesaage: "product not created", status: false });
-//         }
-//         return res.json({
-//             message: "product successfully created",
-//             status: true,
-//             data: saveProduct
-//         });
-
-//     } catch (error) {
-//         return res.json({
-//             message: "server error",
-//             status: false,
-//             error: error.message
-//         });
-
-//     }
-// };
-
-// //get All Product
-
-// const getAllProducts = async (req, res) => {
-//     try {
-//         const products = await product.find();
-
-
-//         res.status(200).json({
-//             success: true,
-//             message: "Products fetched succesfully",
-//             data: products
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             status: false,
-//             message: error.message,
-//         })
-
-//     }
-
-// };
-// //GET SINGLE PRODUCT
-
-// const getSingleProduct = async (req, res) => {
-//     try {
-//         const SingleProduct = await product.findById(req.params.id);
-
-
-//         res.status(200).json({
-//             success: true,
-//             message: "product fetched succesfully",
-//             data: SingleProduct
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             success: false,
-//             message: (error.message)
-//         });
-
-//     }
-
-// };
-
-// module.exports = { createProduct, getAllProducts,getSingleProduct }
-
 
 
 const product = require("../model/productModel");
@@ -111,12 +7,12 @@ const product = require("../model/productModel");
 // ==========================================
 
 const createProduct = async (req, res) => {
-
-    console.log("File:", req.file);
-    console.log("Body:", req.body);
+    console.log("========== CREATE PRODUCT ==========");
+    console.log("BODY:", req.body);
+    console.log("SECTION:", req.body.section);
+    console.log("FILE:", req.file);
 
     try {
-
         const {
             title,
             brand,
@@ -125,73 +21,69 @@ const createProduct = async (req, res) => {
             price,
             discount,
             size,
-            stock
+            stock,
+            section,
         } = req.body;
 
-
-        const newProduct = new product({
-
-            title,
-
-            brand: brand || "",
-
-            category,
-
-            description,
-
-            price,
-
-            discount: discount || 0,
-
-            size,
-
-            stock: stock || 0,
-
-            image: req.file ? req.file.filename : ""
-
-        });
-
-
-        const saveProduct = await newProduct.save();
-
-
-        if (!saveProduct) {
-
+        // SECTION REQUIRED
+        if (!section) {
             return res.status(400).json({
-                message: "Product not created",
-                status: false
+                success: false,
+                message: "Please select a product section",
             });
-
         }
 
+        // ALLOWED SECTIONS
+        const allowedSections = [
+            "selling",
+            "featured",
+            "popular",
+        ];
 
-        return res.status(201).json({
+        if (!allowedSections.includes(section)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid product section",
+            });
+        }
 
-            message: "Product successfully created",
-
-            status: true,
-
-            data: saveProduct
-
+        // CREATE PRODUCT
+        const newProduct = new product({
+            title,
+            brand: brand || "",
+            category,
+            description,
+            price: Number(price),
+            discount: Number(discount) || 0,
+            size,
+            stock: Number(stock) || 0,
+            section,
+            image: req.file
+                ? req.file.filename
+                : "",
         });
 
+        // SAVE
+        const saveProduct = await newProduct.save();
+
+        console.log("PRODUCT SAVED:", saveProduct);
+        console.log("SAVED SECTION:", saveProduct.section);
+
+        return res.status(201).json({
+            success: true,
+            message: "Product successfully created",
+            data: saveProduct,
+        });
 
     } catch (error) {
-
         console.log("Create Product Error:", error);
 
         return res.status(500).json({
-
+            success: false,
             message: "Server error",
-
-            status: false,
-
-            error: error.message
-
+            error: error.message,
         });
-
     }
-
 };
 
 
@@ -200,35 +92,104 @@ const createProduct = async (req, res) => {
 // ==========================================
 
 const getAllProducts = async (req, res) => {
-
     try {
-
         const products = await product.find();
 
         return res.status(200).json({
-
             success: true,
-
             message: "Products fetched successfully",
-
-            data: products
-
+            data: products,
         });
 
     } catch (error) {
-
         console.log("Get Products Error:", error);
 
         return res.status(500).json({
-
             success: false,
+            message: error.message,
+        });
+    }
+};
 
-            message: error.message
 
+// ==========================================
+// GET SELLING PRODUCTS
+// ==========================================
+
+const getSellingProducts = async (req, res) => {
+    try {
+        const products = await product.find({
+            section: "selling",
         });
 
-    }
+        return res.status(200).json({
+            success: true,
+            message: "Selling products fetched successfully",
+            data: products,
+        });
 
+    } catch (error) {
+        console.log("Get Selling Products Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+// ==========================================
+// GET POPULAR PRODUCTS
+// ==========================================
+
+const getPopularProducts = async (req, res) => {
+    try {
+        const products = await product.find({
+            section: "popular",
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Popular products fetched successfully",
+            data: products,
+        });
+
+    } catch (error) {
+        console.log("Get Popular Products Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+// ==========================================
+// GET FEATURED PRODUCTS
+// ==========================================
+
+const getFeaturedProducts = async (req, res) => {
+    try {
+        const products = await product.find({
+            section: "featured",
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Featured products fetched successfully",
+            data: products,
+        });
+
+    } catch (error) {
+        console.log("Get Featured Products Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
 };
 
 
@@ -237,54 +198,42 @@ const getAllProducts = async (req, res) => {
 // ==========================================
 
 const getSingleProduct = async (req, res) => {
-
     try {
-
         const singleProduct = await product.findById(req.params.id);
 
-
         if (!singleProduct) {
-
             return res.status(404).json({
-
                 success: false,
-
-                message: "Product not found"
-
+                message: "Product not found",
             });
-
         }
 
-
         return res.status(200).json({
-
             success: true,
-
             message: "Product fetched successfully",
-
-            data: singleProduct
-
+            data: singleProduct,
         });
 
     } catch (error) {
-
         console.log("Get Single Product Error:", error);
 
         return res.status(500).json({
-
             success: false,
-
-            message: error.message
-
+            message: error.message,
         });
-
     }
-
 };
 
+
+// ==========================================
+// EXPORT
+// ==========================================
 
 module.exports = {
     createProduct,
     getAllProducts,
-    getSingleProduct
+    getSellingProducts,
+    getPopularProducts,
+    getFeaturedProducts,
+    getSingleProduct,
 };
