@@ -31,77 +31,30 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-  createProduct,
-  getAllProducts,
-  getSellingProducts,
-  getPopularProducts,
-  getFeaturedProducts,
-  getSingleProduct
-} = require("../controller/productController");
+const { createProduct, getAllProducts, getSellingProducts, getPopularProducts, getFeaturedProducts, getSingleProduct } = require("../controller/productController");
 
 const upload = require("../middleware/upload");
-const ProtectRoute= require("../middleware/ProtectRoute")
+const ProtectRoute = require("../middleware/ProtectRoute")
 
-// ==========================================
+
 // CREATE PRODUCT
-// ==========================================
+router.post("/createProduct", upload.single("image"), createProduct);
 
-router.post(
-  "/createProduct",
-  upload.single("image"),
-  createProduct
-);
-
-
-// ==========================================
 // GET ALL PRODUCTS
-// ==========================================
+router.get("/getAllProducts", ProtectRoute, getAllProducts);
 
-router.get(
-  "/getAllProducts",ProtectRoute,
-  getAllProducts
-);
-
-
-// ==========================================
 // GET SELLING PRODUCTS
-// ==========================================
+router.post("/selling", getSellingProducts);
 
-router.post(
-  "/selling",
-  getSellingProducts
-);
-
-
-// ==========================================
 // GET POPULAR PRODUCTS
-// ==========================================
+router.post("/popular", getPopularProducts);
 
-router.post(
-  "/popular",
-  getPopularProducts
-);
-
-
-// ==========================================
 // GET FEATURED PRODUCTS
-// ==========================================
+router.post("/featured", getFeaturedProducts);
 
-router.post(
-  "/featured",
-  getFeaturedProducts
-);
-
-
-// ==========================================
 // GET SINGLE PRODUCT
-// ==========================================
 
-router.get(
-  "/getSingleProduct/:id",
-  getSingleProduct
-);
+router.get("/getSingleProduct/:id", getSingleProduct);
 
 
 // ==========================================
@@ -109,7 +62,7 @@ router.get(
 // ==========================================
 
 // router.delete("/deleteProduct/:id", deleteProduct);
-// router.put("/updateProduct/:id", updateProduct);
+//router.put("/updateProduct/:id", updateProduct);
 
 
 module.exports = router;
