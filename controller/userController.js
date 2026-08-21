@@ -65,6 +65,7 @@ const userLogin = async (req, res) => {
         console.log(req.body)
         const { email, password } = req.body;
         const user = await User.findOne({ email })
+        
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -91,13 +92,13 @@ const userLogin = async (req, res) => {
             token,
             user: {
                 email: user.email,
-                password: user.password,
+                //password: user.password,
             }
         })
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error
+            message: error.message
         })
     }
 

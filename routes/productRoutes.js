@@ -41,8 +41,8 @@ const ProtectRoute = require("../middleware/ProtectRoute")
 router.post("/createProduct", upload.single("image"), createProduct);
 
 // GET ALL PRODUCTS
-router.get("/getAllProducts", ProtectRoute, getAllProducts);
-
+//router.get("/getAllProducts", ProtectRoute, getAllProducts);
+router.get("/getAllProducts", getAllProducts);
 // GET SELLING PRODUCTS
 router.post("/selling", getSellingProducts);
 

@@ -1,5 +1,4 @@
 
-
 const product = require("../model/productModel");
 
 // ==========================================
@@ -9,7 +8,6 @@ const product = require("../model/productModel");
 const createProduct = async (req, res) => {
     console.log("========== CREATE PRODUCT ==========");
     console.log("BODY:", req.body);
-    console.log("SECTION:", req.body.section);
     console.log("FILE:", req.file);
 
     try {
@@ -17,66 +15,150 @@ const createProduct = async (req, res) => {
             title,
             brand,
             category,
+            type,
             description,
             price,
             discount,
             size,
             stock,
+            sku,
             section,
         } = req.body;
 
-        // SECTION REQUIRED
-        if (!section) {
+        // ==========================================
+        // BASIC VALIDATION
+        // ==========================================
+
+        if (!title || !category || !description || !price || !size) {
             return res.status(400).json({
                 success: false,
-                message: "Please select a product section",
+                message: "Please fill all required product fields",
             });
         }
 
+        // ==========================================
+        // SECTION
+        // ==========================================
+
+        let productSections = section;
+
+        /*
+          FormData se section kabhi string ke form me
+          aa sakta hai:
+    
+          "selling"
+    
+          ya JSON string:
+    
+          '["selling","featured"]'
+        */
+
+        if (typeof productSections === "string") {
+            try {
+                productSections = JSON.parse(productSections);
+            } catch {
+                productSections = [productSections];
+            }
+        }
+
+        // Safety
+        if (!Array.isArray(productSections)) {
+            productSections = [productSections];
+        }
+
+        // Empty section check
+        if (productSections.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Please select at least one product section",
+            });
+        }
+
+        // ==========================================
         // ALLOWED SECTIONS
+        // ==========================================
+
         const allowedSections = [
             "selling",
             "featured",
             "popular",
         ];
 
-        if (!allowedSections.includes(section)) {
+        const invalidSection = productSections.some(
+            (item) => !allowedSections.includes(item)
+        );
+
+        if (invalidSection) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid product section",
             });
         }
 
+        // Remove duplicate sections
+        productSections = [...new Set(productSections)];
+
+        // ==========================================
         // CREATE PRODUCT
+        // ==========================================
+
         const newProduct = new product({
-            title,
-            brand: brand || "",
-            category,
-            description,
+            title: title.trim(),
+
+            brand: brand?.trim() || "",
+
+            category: category.trim(),
+
+            type: type?.trim() || "",
+
+            description: description.trim(),
+
             price: Number(price),
+
             discount: Number(discount) || 0,
-            size,
+
+            size: size.trim(),
+
             stock: Number(stock) || 0,
-            section,
+
+            sku: sku?.trim() || undefined,
+
             image: req.file
                 ? req.file.filename
                 : "",
+
+            section: productSections,
+
+            // These will automatically use schema defaults
+            // rating: 0
+            // reviewCount: 0
+            // isActive: true
         });
 
+        // ==========================================
         // SAVE
-        const saveProduct = await newProduct.save();
+        // ==========================================
 
-        console.log("PRODUCT SAVED:", saveProduct);
-        console.log("SAVED SECTION:", saveProduct.section);
+        const savedProduct = await newProduct.save();
+
+        console.log("PRODUCT SAVED:", savedProduct);
 
         return res.status(201).json({
             success: true,
             message: "Product successfully created",
-            data: saveProduct,
+            data: savedProduct,
         });
 
     } catch (error) {
         console.log("Create Product Error:", error);
+
+        // Duplicate SKU
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: "SKU already exists. Please use a different SKU.",
+            });
+        }
 
         return res.status(500).json({
             success: false,
@@ -85,7 +167,6 @@ const createProduct = async (req, res) => {
         });
     }
 };
-
 
 // ==========================================
 // GET ALL PRODUCTS

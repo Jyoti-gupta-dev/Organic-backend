@@ -22,10 +22,14 @@ const ProtectRoute = async (req, res, next) => {
             throw new Error("User is not authorized or token is missing");
         }
     } else {
-        res.status({
-            status: false,
-            msg: "something wrong",
-        });
+        // res.status({
+        //     status: false,
+        //     msg: "something wrong",
+        // });
+        return res.status(401).json({
+    status: false,
+    msg: "something wrong"
+});
     }
 };
 
