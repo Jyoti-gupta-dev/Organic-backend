@@ -4,169 +4,202 @@ const product = require("../model/productModel");
 // ==========================================
 // CREATE PRODUCT
 // ==========================================
-
 const createProduct = async (req, res) => {
-    console.log("========== CREATE PRODUCT ==========");
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
     try {
+
+        // ================================
+        // 1. GET DATA FROM REQUEST
+        // ================================
+
         const {
             title,
             brand,
+            sku,
             category,
-            type,
             description,
             price,
             discount,
             size,
             stock,
-            sku,
             section,
         } = req.body;
 
-        // ==========================================
-        // BASIC VALIDATION
-        // ==========================================
 
-        if (!title || !category || !description || !price || !size) {
+       
+        // // 2. REQUIRED FIELD VALIDATION
+        
+
+        // if (
+        //     !title ||
+        //     !category ||
+        //     !description ||
+        //     !price ||
+        //     !size
+        // ) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Please fill all required fields",
+        //     });
+        // }
+
+
+        // ================================
+        // 3. IMAGE VALIDATION
+        // ================================
+
+        if (!req.file) {
             return res.status(400).json({
                 success: false,
-                message: "Please fill all required product fields",
+                message: "Product image is required",
             });
         }
 
-        // ==========================================
-        // SECTION
-        // ==========================================
 
-        let productSections = section;
+        // ================================
+        // 4. SECTION HANDLE
+        // ================================
 
-        /*
-          FormData se section kabhi string ke form me
-          aa sakta hai:
-    
-          "selling"
-    
-          ya JSON string:
-    
-          '["selling","featured"]'
-        */
+        let productSections = [];
 
-        if (typeof productSections === "string") {
-            try {
-                productSections = JSON.parse(productSections);
-            } catch {
-                productSections = [productSections];
-            }
+        if (Array.isArray(section)) {
+            productSections = section;
+        } else if (section) {
+            productSections = [section];
         }
 
-        // Safety
-        if (!Array.isArray(productSections)) {
-            productSections = [productSections];
-        }
 
-        // Empty section check
+        // ================================
+        // 5. SECTION VALIDATION
+        // ================================
+
         if (productSections.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: "Please select at least one product section",
+                message: "At least one product section is required",
             });
         }
 
-        // ==========================================
-        // ALLOWED SECTIONS
-        // ==========================================
 
-        const allowedSections = [
-            "selling",
-            "featured",
-            "popular",
-        ];
+        // ================================
+        // 6. CHECK DUPLICATE SKU
+        // ================================
 
-        const invalidSection = productSections.some(
-            (item) => !allowedSections.includes(item)
-        );
+        if (sku) {
 
-        if (invalidSection) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid product section",
+            const existingProduct = await Product.findOne({
+                sku: sku.trim(),
             });
+
+            if (existingProduct) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Product with this SKU already exists",
+                });
+            }
         }
 
-        // Remove duplicate sections
-        productSections = [...new Set(productSections)];
 
-        // ==========================================
-        // CREATE PRODUCT
-        // ==========================================
+        // ================================
+        // 7. CREATE PRODUCT
+        // ================================
 
         const newProduct = new product({
+
             title: title.trim(),
 
-            brand: brand?.trim() || "",
+            brand: brand
+                ? brand.trim()
+                : "",
+
+            sku: sku
+                ? sku.trim()
+                : undefined,
 
             category: category.trim(),
-
-            type: type?.trim() || "",
 
             description: description.trim(),
 
             price: Number(price),
 
-            discount: Number(discount) || 0,
+            discount: discount
+                ? Number(discount)
+                : 0,
 
             size: size.trim(),
 
-            stock: Number(stock) || 0,
-
-            sku: sku?.trim() || undefined,
-
-            image: req.file
-                ? req.file.filename
-                : "",
+            stock: stock
+                ? Number(stock)
+                : 0,
 
             section: productSections,
 
-            // These will automatically use schema defaults
-            // rating: 0
-            // reviewCount: 0
-            // isActive: true
+            image: req.file.filename,
+
         });
 
-        // ==========================================
-        // SAVE
-        // ==========================================
+
+        // ================================
+        // 8. SAVE PRODUCT
+        // ================================
 
         const savedProduct = await newProduct.save();
 
-        console.log("PRODUCT SAVED:", savedProduct);
+
+        // ================================
+        // 9. SUCCESS RESPONSE
+        // ================================
 
         return res.status(201).json({
+
             success: true,
-            message: "Product successfully created",
-            data: savedProduct,
+
+            message: "Product created successfully",
+
+            product: savedProduct,
+
         });
 
-    } catch (error) {
-        console.log("Create Product Error:", error);
 
-        // Duplicate SKU
+    } catch (error) {
+
+        console.error(
+            "Create Product Error:",
+            error
+        );
+
+
+        // ================================
+        // DUPLICATE SKU ERROR
+        // ================================
+
         if (error.code === 11000) {
+
             return res.status(400).json({
                 success: false,
-                message: "SKU already exists. Please use a different SKU.",
+                message: "SKU already exists",
             });
         }
 
+
+        // ================================
+        // SERVER ERROR
+        // ================================
+
         return res.status(500).json({
+
             success: false,
-            message: "Server error",
+
+            message: "Failed to create product",
+
             error: error.message,
+
         });
     }
 };
+
+
+
+
 
 // ==========================================
 // GET ALL PRODUCTS

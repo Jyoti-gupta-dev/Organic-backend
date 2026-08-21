@@ -29,7 +29,7 @@
         origin: ["http://localhost:5173",
             "http://localhost:5174",
             "https://organic-frontend-sigma.vercel.app",
-            "https://organic-admin-pink.vercel.app"
+            "https://organic-admin-pink.vercel.app",
         ],
         credentials: true
     }));
