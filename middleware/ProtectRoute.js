@@ -4,7 +4,7 @@ const ProtectRoute = async (req, res, next) => {
     let authHeader = req.headers.Authorization || req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer")) {
         token = authHeader.split(" ")[1];
-        jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+        jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
             if (decoded) {
                 let result = await User.findOne({ _id: decoded.userId });
                 req.user = result;

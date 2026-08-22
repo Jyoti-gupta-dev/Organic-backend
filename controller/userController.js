@@ -65,7 +65,7 @@ const userLogin = async (req, res) => {
         console.log(req.body)
         const { email, password } = req.body;
         const user = await User.findOne({ email })
-        
+
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -103,6 +103,8 @@ const userLogin = async (req, res) => {
     }
 
 };
+
+
 
 //SINGLEUSER
 
@@ -161,7 +163,7 @@ const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
         console.log("ID:", req.params.id);
-console.log("BODY:", req.body);
+        console.log("BODY:", req.body);
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
@@ -222,4 +224,29 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { userSignup, userLogin, getSingleUser, getAllUser, updateUser, deleteUser }
+const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Profile fetched successfully",
+            user
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch profile",
+            error: error.message
+        });
+    }
+};
+module.exports = { userSignup, userLogin, getSingleUser, getAllUser, updateUser, deleteUser, getProfile }

@@ -51,13 +51,14 @@ const createProduct = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Product image is required",
+
             });
         }
 
 
-        // ================================
+       
         // 4. SECTION HANDLE
-        // ================================
+       
 
         let productSections = [];
 
@@ -68,9 +69,9 @@ const createProduct = async (req, res) => {
         }
 
 
-        // ================================
+       
         // 5. SECTION VALIDATION
-        // ================================
+    
 
         if (productSections.length === 0) {
             return res.status(400).json({
@@ -80,13 +81,12 @@ const createProduct = async (req, res) => {
         }
 
 
-        // ================================
         // 6. CHECK DUPLICATE SKU
-        // ================================
+        
 
         if (sku) {
 
-            const existingProduct = await Product.findOne({
+            const existingProduct = await product.findOne({
                 sku: sku.trim(),
             });
 
