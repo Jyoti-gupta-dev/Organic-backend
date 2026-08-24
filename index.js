@@ -12,13 +12,22 @@ main().catch((err) => console.log(err));
 
 async function main() {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+        console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
+
+        await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 10000,
+        });
+
         console.log("Database Connected");
         console.log("DB Name:", mongoose.connection.name);
+        console.log("DB Host:", mongoose.connection.host);
+
     } catch (err) {
-        console.log("MongoDB Connection Error:", err);
+        console.error("MongoDB Connection Error:", err);
+        process.exit(1);
     }
 }
+
 
 
 
