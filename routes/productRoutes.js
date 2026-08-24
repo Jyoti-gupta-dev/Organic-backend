@@ -34,7 +34,7 @@ const router = express.Router();
 const { createProduct, getAllProducts, getSellingProducts, getPopularProducts, getFeaturedProducts, getSingleProduct } = require("../controller/productController");
 
 const upload = require("../middleware/upload");
-const ProtectRoute = require("../middleware/ProtectRoute")
+//const ProtectRoute = require("../middleware/ProtectRoute")
 
 
 // CREATE PRODUCT

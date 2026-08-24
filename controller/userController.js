@@ -51,7 +51,7 @@ const userSignup = async (req, res) => {
         console.log(error)
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error
         })
 
     }
@@ -98,7 +98,7 @@ const userLogin = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error
         })
     }
 
@@ -128,7 +128,7 @@ const getSingleUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error
         });
 
     }
@@ -152,7 +152,7 @@ const getAllUser = async (req, res) => {
 
         res.status(500).json({
             success: false,
-            message: error.message,
+            message: error
         });
 
     }
@@ -190,7 +190,7 @@ const updateUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error
         });
     }
 };
@@ -219,34 +219,36 @@ const deleteUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error
         });
     }
 };
 
-const getProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.userId).select("-password");
+const Profile = async (req, res) => {
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
-        }
+    consle.log(req.user.id)
+    // try {
+    //     const user = await User.findById(req.userId).select("-password");
 
-        res.status(200).json({
-            success: true,
-            message: "Profile fetched successfully",
-            user
-        });
+    //     if (!user) {
+    //         return res.status(404).json({
+    //             success: false,
+    //             message: "User not found"
+    //         });
+    //     }
 
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to fetch profile",
-            error: error.message
-        });
-    }
+    //     res.status(200).json({
+    //         success: true,
+    //         message: "Profile fetched successfully",
+    //         user
+    //     });
+
+    // } catch (error) {
+    //     res.status(500).json({
+    //         success: false,
+    //         message: "Failed to fetch profile",
+    //         error: error.message
+    //     });
+    // }
 };
-module.exports = { userSignup, userLogin, getSingleUser, getAllUser, updateUser, deleteUser, getProfile }
+module.exports = { userSignup, userLogin, getSingleUser, getAllUser, updateUser, deleteUser, Profile }
