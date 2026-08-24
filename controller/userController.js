@@ -100,6 +100,7 @@ const userLogin = async (req, res) => {
             success: false,
             message: error
         })
+        console.log(error.message)
     }
 
 };
