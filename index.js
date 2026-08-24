@@ -12,10 +12,7 @@ main().catch((err) => console.log(err));
 
 async function main() {
     try {
-        await mongoose.connect(
-            "mongodb://jyotigupta:miracle@ac-vefzhvy-shard-00-00.ybpqktq.mongodb.net:27017,ac-vefzhvy-shard-00-01.ybpqktq.mongodb.net:27017,ac-vefzhvy-shard-00-02.ybpqktq.mongodb.net:27017/users?ssl=true&replicaSet=atlas-4gafsj-shard-0&authSource=admin&appName=Cluster0"
-        );
-
+        await mongoose.connect(process.env.MONGO_URI);
         console.log("Database Connected");
         console.log("DB Name:", mongoose.connection.name);
     } catch (err) {
