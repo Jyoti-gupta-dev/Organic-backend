@@ -193,9 +193,11 @@ const updateUser = async (req, res) => {
             message: error
         });
     }
-};
+}
 
-//DELETE USER
+
+
+// DELETE USER
 
 const deleteUser = async (req, res) => {
     try {
@@ -219,36 +221,44 @@ const deleteUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error
+            message: error.message
         });
     }
 };
 
+
+// PROFILE
+
 const Profile = async (req, res) => {
+    try {
+        console.log("REQ.USER:", req.user);
+        const userId = req.user.id;
+        const user = await User.findById(userId)
 
-    consle.log(req.user.id)
-    // try {
-    //     const user = await User.findById(req.userId).select("-password");
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
 
-    //     if (!user) {
-    //         return res.status(404).json({
-    //             success: false,
-    //             message: "User not found"
-    //         });
-    //     }
+        res.status(200).json({
+            success: true,
+            message: "Profile fetched successfully",
+            user
+        });
 
-    //     res.status(200).json({
-    //         success: true,
-    //         message: "Profile fetched successfully",
-    //         user
-    //     });
+    } catch (error) {
+        console.log("PROFILE ERROR:", error);
 
-    // } catch (error) {
-    //     res.status(500).json({
-    //         success: false,
-    //         message: "Failed to fetch profile",
-    //         error: error.message
-    //     });
-    // }
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch profile",
+            error: error
+        });
+    }
 };
+
+
+
 module.exports = { userSignup, userLogin, getSingleUser, getAllUser, updateUser, deleteUser, Profile }

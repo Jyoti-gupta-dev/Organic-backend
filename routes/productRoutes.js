@@ -34,15 +34,15 @@ const router = express.Router();
 const { createProduct, getAllProducts, getSellingProducts, getPopularProducts, getFeaturedProducts, getSingleProduct } = require("../controller/productController");
 
 const upload = require("../middleware/upload");
-//const ProtectRoute = require("../middleware/ProtectRoute")
+const ProtectRoute = require("../middleware/ProtectRoute")
 
 
 // CREATE PRODUCT
 router.post("/createProduct", upload.single("image"), createProduct);
 
 // GET ALL PRODUCTS
-//router.get("/getAllProducts", ProtectRoute, getAllProducts);
-router.get("/getAllProducts", getAllProducts);
+router.get("/getAllProducts", ProtectRoute, getAllProducts);
+// router.get("/getAllProducts", getAllProducts);
 // GET SELLING PRODUCTS
 router.post("/selling", getSellingProducts);
 
