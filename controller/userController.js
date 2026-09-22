@@ -232,7 +232,7 @@ const deleteUser = async (req, res) => {
 const Profile = async (req, res) => {
     try {
         console.log("REQ.USER:", req.user);
-        const userId = req.user.id;
+        const userId = req.user.userId;
         const user = await User.findById(userId)
 
         if (!user) {
